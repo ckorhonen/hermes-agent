@@ -1280,7 +1280,7 @@ def profile_env(tmp_path, monkeypatch):
 
 **ALWAYS use `scripts/run_tests.sh`** — do not call `pytest` directly. The script enforces
 hermetic environment parity with CI (unset credential vars, TZ=UTC, LANG=C.UTF-8,
-`-n auto` xdist workers, in-tree subprocess-isolation plugin). Direct `pytest`
+per-file subprocess isolation via `scripts/run_tests_parallel.py`). Direct `pytest`
 on a 16+ core developer machine with API keys set diverges from CI in ways
 that have caused multiple "works locally, fails in CI" incidents (and the reverse).
 
@@ -1354,3 +1354,15 @@ not the specific names.
 
 Reviewers should reject new change-detector tests; authors should convert
 them into invariants before re-requesting review.
+
+## Checkout setup and delivery evidence
+
+Use Python >=3.11,<3.14 from `pyproject.toml`; CI installs Python 3.11 and runs `uv sync --locked --python 3.11 --extra all --extra dev`. Keep the locked environment local to the checkout. Python tests must use `scripts/run_tests.sh` as required above; select affected files before expanding to the required suite. CI enforces `ruff check .`; its ruff/ty diff report is advisory, not a substitute for that gate. Frontend CI uses Node 22 and the root npm workspace install, then package-specific typechecks/builds from `.github/workflows/typecheck.yml`.
+
+Do not start a live gateway, cron dispatcher, desktop session or provider inference merely to validate instructions. Real integration checks must use disposable `HERMES_HOME` and the existing live-system guards; report skipped runtime checks and the precise prerequisite. Preserve every architecture, plugin, caching and security constraint above.
+
+## Completing work
+
+Follow the nearest repository instructions and existing patterns; preserve unrelated edits. Make routine reversible choices within the request and continue through implementation, relevant checks, and repair of failures caused by the change. Ask only for material product decisions, missing prerequisites, or actions outside the authorization. Deployment, publishing, credentials, destructive operations, and live external effects need authorization for that scope.
+
+Choose checks for the affected behavior and existing required gates; do not broaden into unrelated cleanup. For instruction-only edits, inspect source references and run `git diff --check -- AGENTS.md` (include any other changed instruction paths). Report changed paths, actual check results, and unverified runtime behavior. If blocked, give the exact failed command or missing prerequisite, separate baseline failures, and continue independent authorized work.
